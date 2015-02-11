@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ -f $HOME/.Xresources ]; then
+  xrdb $HOME/.Xresources
+elif [ -f $HOME/.Xdefaults ]; then
+  xrdb $HOME/.Xdefaults
+fi
+
+if [ ! -d $HOME/GNUstep ]; then
+    /usr/bin/wmaker.inst --batch
+fi
+
+/usr/bin/wmaker

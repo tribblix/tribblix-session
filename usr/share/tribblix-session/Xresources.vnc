@@ -1,0 +1,15 @@
+!
+! X resource settings for VNC
+!
+! turn off stippled scrollbars
+!
+*Scrollbar*thumb:	black
+*Scrollbar*foreground:	grey
+!
+! force standard xterm mode
+!
+XTerm*scrollBar:        true
+XTerm*saveLines:        400
+XTerm*backingStore:     always
+XTerm*texSmall:         true
+XTerm*jumpScroll:       true
