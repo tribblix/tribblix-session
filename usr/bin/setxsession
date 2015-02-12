@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# copy a startup file for the appropriate VNC session
+# copy a startup file for the appropriate X session
 #
 
 DESTDIR="${HOME}"

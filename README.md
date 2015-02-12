@@ -28,7 +28,7 @@ The xstartup or xinitrc files are copied to ~/.vnc/xstartup or
 ~/.xinitrc as appropriate.
 
 The verify script is run before the copy takes place. If it fails, it
-will explain why on stdout and fail with a none-zero exit code; the
+will explain why on stdout and fail with a non-zero exit code; the
 copy of the session script will not take place.
 
 The verify script is also run with the -query flag whenever a list of
