@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ -f $HOME/.Xresources ]; then
+  xrdb $HOME/.Xresources
+elif [ -f $HOME/.Xdefaults ]; then
+  xrdb $HOME/.Xdefaults
+fi
+
+if [ -f /usr/share/tribblix-desktop/Xresources.vnc ]; then
+  xrdb -merge /usr/share/tribblix-desktop/Xresources.vnc
+fi
+
+if [ -x /usr/bin/vncconfig ]; then
+    /usr/bin/vncconfig &
+fi
+
+/usr/bin/openbox-session &

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+TBIN=/usr/bin/startfluxbox
+PKG="retro-desktop-extras"
+DESC="Fluxbox"
+
+case $1 in
+-query)
+  printf "$DESC "
+  if [ -x ${TBIN} ]; then
+     printf "(installed)\n"
+  else
+     printf "(not installed)\n"
+  fi
+  exit 0
+  ;;
+esac
+
+if [ -x ${TBIN} ]; then
+  exit 0
+fi
+
+echo "The $DESC session is not installed"
+echo "  Perhaps you should install the ${PKG} overlay"
+echo "  # zap install-overlay ${PKG}"
+exit 1
