@@ -54,7 +54,7 @@ esac
 # check it exists
 #
 if [ ! -f ${SRCDIR}/${TARGET}.${SUFFIX} ]; then
-   echo "No such session $TARGET}"
+   echo "No such session ${TARGET}"
    listsessions
    exit 1
 fi
