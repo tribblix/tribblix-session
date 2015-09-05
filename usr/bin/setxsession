@@ -43,7 +43,7 @@ case $1 in
 	TARGET="wmaker"
 	;;
 'enlightenment')
-	TARGET="e17"
+	TARGET="e19"
 	;;
 *)
 	TARGET="$1"

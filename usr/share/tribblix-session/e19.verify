@@ -1,8 +1,8 @@
 #!/bin/sh
 
 TBIN=/usr/bin/enlightenment
-PKG="e17"
-DESC="Enlightenment E17"
+PKG="e19"
+DESC="Enlightenment"
 
 case $1 in
 -query)
