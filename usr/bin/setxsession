@@ -8,7 +8,7 @@ SRCDIR="/usr/share/tribblix-session"
 SUFFIX="xinitrc"
 
 usage() {
-  echo "$0 - set up vnc session"
+  echo "$0 - set up X session"
   listsessions
   exit 0
 }
