@@ -14,4 +14,7 @@ if [ -x /usr/bin/vncconfig ]; then
     /usr/bin/vncconfig &
 fi
 
+XDG_CONFIG_DIRS=/usr/etc/xdg
+export XDG_CONFIG_DIRS
+
 /usr/bin/mate-session &

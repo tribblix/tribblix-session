@@ -6,4 +6,7 @@ elif [ -f $HOME/.Xdefaults ]; then
   xrdb $HOME/.Xdefaults
 fi
 
+XDG_CONFIG_DIRS=/usr/etc/xdg
+export XDG_CONFIG_DIRS
+
 exec /usr/bin/mate-session
