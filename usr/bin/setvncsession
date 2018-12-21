@@ -6,6 +6,7 @@
 DESTDIR="${HOME}/.vnc"
 SRCDIR="/usr/share/tribblix-session"
 SUFFIX="xstartup"
+export DESTDIR SUFFIX
 
 usage() {
   echo "$0 - set up vnc session"
