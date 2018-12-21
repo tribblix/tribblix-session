@@ -1,17 +1,28 @@
 #!/bin/sh
 
 TBIN=/usr/bin/tvtwm
+EBIN=${TBIN}
 PKG="retro-desktop-extras"
 DESC="Tom's virtual Tab Window Manager"
+
+if [ "${SUFFIX}" = "xinitrc" ]; then
+  SFILE=.${SUFFIX}
+else
+  SFILE=${SUFFIX}
+fi
 
 case $1 in
 -query)
   printf "$DESC "
   if [ -x ${TBIN} ]; then
-     printf "(installed)\n"
+     printf "(installed)"
   else
-     printf "(not installed)\n"
+     printf "(not installed)"
   fi
+  if [ -f ${DESTDIR}/${SFILE} ]; then
+	  grep -q ${EBIN} ${DESTDIR}/${SFILE} && printf " [ACTIVE]"
+  fi
+  printf "\n"
   exit 0
   ;;
 esac
