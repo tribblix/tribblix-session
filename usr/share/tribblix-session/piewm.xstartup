@@ -6,8 +6,8 @@ elif [ -f $HOME/.Xdefaults ]; then
   xrdb $HOME/.Xdefaults
 fi
 
-if [ -f /usr/share/tribblix-desktop/Xresources.vnc ]; then
-  xrdb -merge /usr/share/tribblix-desktop/Xresources.vnc
+if [ -f /usr/share/tribblix-session/Xresources.vnc ]; then
+  xrdb -merge /usr/share/tribblix-session/Xresources.vnc
 fi
 
 if [ -x /usr/bin/vncconfig ]; then
