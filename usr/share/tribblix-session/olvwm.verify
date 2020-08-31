@@ -1,0 +1,27 @@
+#!/bin/sh
+
+TBIN=/usr/bin/olvwm
+PKG1="TRIBxview"
+PKG2="TRIBolvwm"
+DESC="OLVWM"
+
+case $1 in
+-query)
+  printf "$DESC "
+  if [ -x ${TBIN} ]; then
+     printf "(installed)\n"
+  else
+     printf "(not installed)\n"
+  fi
+  exit 0
+  ;;
+esac
+
+if [ -x ${TBIN} ]; then
+  exit 0
+fi
+
+echo "The $DESC session is not installed"
+echo "  Perhaps you should install the ${PKG1} and ${PKG2} packages"
+echo "  # zap install ${PKG1} ${PKG2}"
+exit 1
