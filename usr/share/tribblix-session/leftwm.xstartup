@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ -f $HOME/.Xresources ]; then
+  xrdb $HOME/.Xresources
+elif [ -f $HOME/.Xdefaults ]; then
+  xrdb $HOME/.Xdefaults
+fi
+
+if [ -f /usr/share/tribblix-session/Xresources.vnc ]; then
+  xrdb -merge /usr/share/tribblix-session/Xresources.vnc
+fi
+
+if [ -x /usr/bin/vncconfig ]; then
+    /usr/bin/vncconfig &
+fi
+
+# otherwise you get an infinite loop
+XDG_RUNTIME_DIR=/tmp/leftwm.${USER}
+export XDG_RUNTIME_DIR
+mkdir -m 0700 -p $XDG_RUNTIME_DIR
+
+dbus-launch /usr/bin/leftwm &
