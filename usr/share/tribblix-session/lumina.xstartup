@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ -f $HOME/.Xresources ]; then
+  xrdb $HOME/.Xresources
+elif [ -f $HOME/.Xdefaults ]; then
+  xrdb $HOME/.Xdefaults
+fi
+
+if [ -f /usr/share/tribblix-session/Xresources.vnc ]; then
+  xrdb -merge /usr/share/tribblix-session/Xresources.vnc
+fi
+
+if [ -x /usr/bin/vncconfig ]; then
+    /usr/bin/vncconfig &
+fi
+
+env PATH=/usr/versions/lumina/bin:$PATH start-lumina-desktop &
