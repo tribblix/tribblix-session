@@ -1,8 +1,7 @@
 #!/bin/sh
 
 TBIN=/usr/bin/olvwm
-PKG1="TRIBxview"
-PKG2="TRIBolvwm"
+PKG="openlook"
 DESC="OLVWM"
 
 case $1 in
@@ -22,6 +21,6 @@ if [ -x ${TBIN} ]; then
 fi
 
 echo "The $DESC session is not installed"
-echo "  Perhaps you should install the ${PKG1} and ${PKG2} packages"
-echo "  # zap install ${PKG1} ${PKG2}"
+echo "  Perhaps you should install the ${PKG} overlay"
+echo "  # zap install-overlay ${PKG}"
 exit 1
