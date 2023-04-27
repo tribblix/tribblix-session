@@ -1,0 +1,32 @@
+.TH "SETXSESSION" "1" "April 27, 2023" "Tribblix"
+.SH NAME
+setxsession - configure Tribblix X session
+.SH SYNOPSIS
+.nf
+\fBsetxsession\fR [session]
+.fi
+.SH DESCRIPTION
+The
+.BR setxsession
+utility allows the user to configure the X
+session that will be launched when logging into the system.
+.LP
+If run without an argument, a list of the names of valid desktop
+sessions is returned, together with the longer name of the associated
+desktop environment and whether the packages required to support the
+session are installed.
+.LP
+To configure a given session to be used on the next invocation of
+.BR startx (1) ,
+or if logging in via the
+.BR slim (1)
+login manager,
+supply the name of the desired session as the only argument.
+.LP
+If the requested session is not available, it will not be configured,
+and the steps necessary to install the required package(s) or
+overlay(s) will be presented.
+.SH SEE ALSO
+.BR setvncsession (1),
+.BR slim (1),
+.BR startx (1)
