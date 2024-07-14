@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# SPDX-License-Identifier: CDDL-1.0
+#
 # copy a startup file for the appropriate VNC session
 #
 
@@ -8,21 +10,21 @@ SRCDIR="/usr/share/tribblix-session"
 SUFFIX="xstartup"
 
 usage() {
-  echo "$0 - set up vnc session"
+  echo "$0 [session]"
   listsessions
   exit 0
 }
 
 listsessions() {
-  cd ${SRCDIR}
+  cd ${SRCDIR} || exit 1
   echo "Available sessions"
   echo "=================="
-  for nsession in *.${SUFFIX}
+  for nsession in *."${SUFFIX}"
   do
-    sessname=${nsession%.${SUFFIX}}
-    if [ -x ${sessname}.verify ]; then
+    sessname=${nsession%."${SUFFIX}"}
+    if [ -x "${sessname}.verify" ]; then
       printf "${sessname}: "
-      ./${sessname}.verify -query
+      ./"${sessname}.verify" -query
     fi
   done
 }
@@ -53,16 +55,16 @@ esac
 #
 # check it exists
 #
-if [ ! -f ${SRCDIR}/${TARGET}.${SUFFIX} ]; then
+if [ ! -f "${SRCDIR}/${TARGET}.${SUFFIX}" ]; then
    echo "No such session ${TARGET}"
    listsessions
    exit 1
 fi
 
-${SRCDIR}/${TARGET}.verify
+${SRCDIR}/"${TARGET}".verify
 if [ $? -eq 0 ]; then
-  rm -f ${DESTDIR}/${SUFFIX}
-  mkdir -p ${DESTDIR}
-  cp ${SRCDIR}/${TARGET}.${SUFFIX} ${DESTDIR}/${SUFFIX}
-  chmod 755 ${DESTDIR}/${SUFFIX}
+  /usr/bin/rm -f "${DESTDIR}/${SUFFIX}"
+  /usr/bin/mkdir -p "${DESTDIR}"
+  /usr/bin/cp "${SRCDIR}/${TARGET}.${SUFFIX}" "${DESTDIR}/${SUFFIX}"
+  /usr/bin/chmod 755 "${DESTDIR}/${SUFFIX}"
 fi
