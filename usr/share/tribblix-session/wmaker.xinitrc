@@ -1,12 +1,15 @@
 #!/bin/sh
+#
+# SPDX-License-Identifier: CDDL-1.0
+#
 
-if [ -f $HOME/.Xresources ]; then
-  xrdb $HOME/.Xresources
-elif [ -f $HOME/.Xdefaults ]; then
-  xrdb $HOME/.Xdefaults
+if [ -f "$HOME/.Xresources" ]; then
+  xrdb "$HOME/.Xresources"
+elif [ -f "$HOME/.Xdefaults" ]; then
+  xrdb "$HOME/.Xdefaults"
 fi
 
-if [ ! -d $HOME/GNUstep ]; then
+if [ ! -d "$HOME/GNUstep" ]; then
     /usr/bin/wmaker.inst --batch
 fi
 

@@ -1,14 +1,17 @@
 #!/bin/sh
+#
+# SPDX-License-Identifier: CDDL-1.0
+#
 
-if [ -f $HOME/.Xresources ]; then
-  xrdb $HOME/.Xresources
-elif [ -f $HOME/.Xdefaults ]; then
-  xrdb $HOME/.Xdefaults
+if [ -f "$HOME/.Xresources" ]; then
+  xrdb "$HOME/.Xresources"
+elif [ -f "$HOME/.Xdefaults" ]; then
+  xrdb "$HOME/.Xdefaults"
 fi
 
 # otherwise you get an infinite loop
 XDG_RUNTIME_DIR=/tmp/leftwm.${USER}
 export XDG_RUNTIME_DIR
-mkdir -m 0700 -p $XDG_RUNTIME_DIR
+/usr/bin/mkdir -m 0700 -p "$XDG_RUNTIME_DIR"
 
-dbus-launch /usr/bin/leftwm
+/usr/bin/dbus-launch /usr/bin/leftwm
