@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# SPDX-License-Identifier: CDDL-1.0
+#
+
+TBIN=/usr/bin/cwm
+PKG="TRIBcwm"
+DESC="OpenBSD cwm Window Manager"
+
+case $1 in
+-query)
+  if [ -x ${TBIN} ]; then
+     printf "%s (installed)\n" "$DESC"
+  else
+     printf "%s (not installed)\n" "$DESC"
+  fi
+  exit 0
+  ;;
+esac
+
+if [ -x ${TBIN} ]; then
+  exit 0
+fi
+
+echo "The $DESC session is not installed"
+echo "  Perhaps you should install the ${PKG} package"
+echo "  # zap install ${PKG}"
+exit 1
