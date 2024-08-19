@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: CDDL-1.0
 #
 
-TBIN=/usr/bin/emwm
+TBIN=/usr/bin/xmsession
 PKG="motif"
 DESC="Enhanced Motif Window Manager"
 

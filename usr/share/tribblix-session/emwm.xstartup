@@ -17,4 +17,4 @@ if [ -x /usr/bin/vncconfig ]; then
     /usr/bin/vncconfig &
 fi
 
-/usr/bin/emwm &
+/usr/bin/xmsession &

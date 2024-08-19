@@ -9,4 +9,4 @@ elif [ -f "$HOME/.Xdefaults" ]; then
   xrdb "$HOME/.Xdefaults"
 fi
 
-/usr/bin/emwm
+/usr/bin/xmsession
