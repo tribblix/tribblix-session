@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: CDDL-1.0
 #
+# Copyright 2025 Peter Tribble
+#
 # copy a startup file for the appropriate VNC session
 #
 
@@ -10,29 +12,30 @@ SRCDIR="/usr/share/tribblix-session"
 SUFFIX="xstartup"
 
 usage() {
-  echo "$0 [session]"
-  listsessions
-  exit 2
+    echo "$0 [session]"
+    listsessions
+    exit 2
 }
 
 listsessions() {
-  cd ${SRCDIR} || exit 1
-  echo "Available sessions"
-  echo "=================="
-  for nsession in *."${SUFFIX}"
-  do
-    sessname=${nsession%."${SUFFIX}"}
-    if [ -x "${sessname}.verify" ]; then
-      printf "${sessname}: "
-      ./"${sessname}.verify" -query
-    fi
-  done
+    cd ${SRCDIR} || exit 1
+    echo "Available sessions"
+    echo "=================="
+    for nsession in *."${SUFFIX}"
+    do
+	sessname=${nsession%."${SUFFIX}"}
+	if [ -x "${sessname}.verify" ]; then
+	    printf "${sessname}: "
+	    ./"${sessname}.verify" -query
+	fi
+    done
 }
 
 case $# in
-1)
+    1)
+	:
 	;;
-*)
+    *)
 	usage
 	;;
 esac
@@ -42,29 +45,29 @@ esac
 #
 case $1 in
 'windowmaker')
-	TARGET="wmaker"
-	;;
+    TARGET="wmaker"
+    ;;
 'enlightenment')
-	TARGET="e19"
-	;;
+    TARGET="e19"
+    ;;
 *)
-	TARGET="$1"
-	;;
+    TARGET="$1"
+    ;;
 esac
 
 #
 # check it exists
 #
 if [ ! -f "${SRCDIR}/${TARGET}.${SUFFIX}" ]; then
-   echo "No such session ${TARGET}"
-   listsessions
-   exit 1
+    echo "No such session ${TARGET}"
+    listsessions
+    exit 1
 fi
 
 ${SRCDIR}/"${TARGET}".verify
 if [ $? -eq 0 ]; then
-  /usr/bin/rm -f "${DESTDIR}/${SUFFIX}"
-  /usr/bin/mkdir -p "${DESTDIR}"
-  /usr/bin/cp "${SRCDIR}/${TARGET}.${SUFFIX}" "${DESTDIR}/${SUFFIX}"
-  /usr/bin/chmod 755 "${DESTDIR}/${SUFFIX}"
+    /usr/bin/rm -f "${DESTDIR}/${SUFFIX}"
+    /usr/bin/mkdir -p "${DESTDIR}"
+    /usr/bin/cp "${SRCDIR}/${TARGET}.${SUFFIX}" "${DESTDIR}/${SUFFIX}"
+    /usr/bin/chmod 755 "${DESTDIR}/${SUFFIX}"
 fi
