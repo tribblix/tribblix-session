@@ -1,0 +1,300 @@
+#!/bin/ksh
+#
+# SPDX-License-Identifier: CDDL-1.0
+#
+# Copyright 2025 Peter Tribble
+#
+# create and/or connect to a VNC session
+#
+# Tribblix version, integrates with setvncsession
+#
+# partially zone aware, need to make the following zone-aware:
+#  session
+#
+# defaults
+#
+CLIENT="X"
+OPTION=""
+PREFSIZE="1440x1080"
+VNCVIEWER="/usr/bin/vncviewer"
+VNCSERVER="/usr/bin/vncserver"
+VNCPASSWD="/usr/bin/vncpasswd"
+VNCSESSION="/usr/bin/setvncsession"
+
+#
+# check VNC is installed
+#
+if [ ! -x "${VNCVIEWER}" ]; then
+    echo "ERROR: vncviewer not installed."
+    echo "(install the TRIBremote-desktop-tigervnc package)"
+    exit 1
+fi
+if [ ! -x "${VNCSERVER}" ]; then
+    echo "ERROR: vncserver not installed."
+    echo "(install the TRIBx11-server-xvnc package)"
+    exit 1
+fi
+if [ ! -x "${VNCPASSWD}" ]; then
+    echo "ERROR: vncpasswd not installed."
+    echo "(install the TRIBx11-server-xvnc package)"
+    exit 1
+fi
+#
+# this really shouldn't happen, as this script is shipped in the same
+# package as setvncsession
+#
+if [ ! -x "${VNCSESSION}" ]; then
+    echo "ERROR: setvncsession not installed."
+    echo "(install the TRIBblix-session package)"
+    exit 1
+fi
+
+#
+# make sure we're in a predictable place, namely the current user's home
+# directory, otherwise any applications launched in a session will start
+# from where we happen to be right now which is probably only going to
+# cause confusion
+#
+cd || exit 1
+
+#
+# check for passwd
+# must set one if not found
+#
+if [ ! -f "$HOME/.vnc/passwd" ]; then
+    echo "You haven't set a vnc password yet"
+    mkdir -p "$HOME/.vnc"
+    $VNCPASSWD
+fi
+if [ ! -f "$HOME/.vnc/passwd" ]; then
+    echo "You still haven't set a vnc password, giving up"
+    exit 1
+fi
+
+#
+# pick off zone first
+#
+case $1 in
+-z|-zone)
+    shift
+    ZNAME="$1"
+    shift
+    #
+    # handle user@zone
+    #
+    ZUSER=""
+    case $ZNAME in
+	*@*)
+	    # Split user off
+	    ZUSER=${ZNAME%@*}@
+	    ZNAME=${ZNAME#*@}
+	    ;;
+    esac
+    #
+    # handle zone:display
+    #
+    ZDISPLAY=""
+    case $ZNAME in
+	*:*)
+	    # Split display off
+	    ZDISPLAY=${ZNAME#*:}
+	    ZNAME=${ZNAME%:*}
+	    ;;
+    esac
+    #
+    # find the zone's IP address
+    #
+    ZIP=$(/usr/sbin/zonecfg -z "$ZNAME" info net 2>/dev/null | grep address: | head -1 | awk '{print $NF}')
+    # strip off cidr
+    ZIP=${ZIP%/*}
+    if [ -z "${ZIP}" ]; then
+	if [ ! -f "/etc/zones/${ZNAME}.xml" ]; then
+	    echo "No such zone ${ZNAME}"
+	else
+	    echo "Cannot determine zone IP address"
+	fi
+	exit 1
+    fi
+    #
+    # if we have a display number, this is a connection request
+    #
+    if [ -n "$ZDISPLAY" ]; then
+	$VNCVIEWER -passwd "$HOME/.vnc/passwd" "${ZIP}:${ZDISPLAY}" > /dev/null 2>&1 &
+	exit 0
+    fi
+    ;;
+esac
+
+#
+# parse remaining arguments
+#
+while [ $# -gt 0 ]
+do
+case $1 in
+-help|--help)
+    echo "Usage: $0 [-z|-zone zone_name] [-help] [-session type]"
+    echo "       [-size t|s|m|l|xl] [-list] [-nc|-noclient] [-q|-query host]"
+    echo "       [-c|-connect session] [-view session] [-client]"
+    echo "Valid session types are:"
+    if [ -n "$ZIP" ]; then
+	/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${ZUSER}${ZIP}" ${VNCSESSION} | tail +2
+    else
+	${VNCSESSION} | tail +2
+    fi
+    exit 0
+    ;;
+-list)
+    if [ -n "$ZIP" ]; then
+	/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${ZUSER}${ZIP}" ${VNCSERVER} -list
+    else
+	${VNCSERVER} -list
+    fi
+    exit 0
+    ;;
+-sessionlist)
+    if [ -n "$ZIP" ]; then
+	/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${ZUSER}${ZIP}" ${VNCSESSION} | tail +2
+    else
+	${VNCSESSION} | tail +2
+    fi
+    exit 0
+    ;;
+-session)
+    shift
+case $1 in
+a*|i*|e*|o*|x*)
+    echo "Running an $1 session"
+    ;;
+"")
+    echo "ERROR: missing session name"
+    exit 2
+    ;;
+*)
+    echo "Running a $1 session"
+    ;;
+esac
+    ${VNCSESSION} "$1"
+    if [ $? -ne 0 ]; then
+	echo "ERROR: Invalid session"
+	exit 1
+    fi
+    shift
+    ;;
+-s|-size)
+    shift
+case $1 in
+xl|extralarge)
+    PREFSIZE="2056x1280"
+    ;;
+l|large)
+    PREFSIZE="1580x1100"
+    ;;
+m|medium)
+    PREFSIZE="1440x1080"
+    ;;
+s|small)
+    PREFSIZE="1000x720"
+    ;;
+t|tiny)
+    PREFSIZE="780x540"
+    ;;
+esac
+    shift
+    ;;
+-g|-geometry)
+    shift
+    PREFSIZE="$1"
+    shift
+    ;;
+-nc|-noclient)
+    shift
+    CLIENT="false"
+    echo "No client started"
+    ;;
+-c|-connect)
+    shift
+    if [ -n "$ZIP" ]; then
+	$VNCVIEWER -passwd "$HOME/.vnc/passwd" "${ZIP}$1" > /dev/null 2>&1 &
+    else
+	$VNCVIEWER -passwd "$HOME/.vnc/passwd" "$1" > /dev/null 2>&1 &
+    fi
+    exit
+    ;;
+-client)
+    shift
+    $VNCVIEWER > /dev/null 2>&1 &
+    exit
+    ;;
+-view)
+    shift
+    exec $VNCVIEWER "$1"
+    exit
+    ;;
+-q|-query)
+    shift
+    #
+    # disable running our own session with -noxstartup as the xdm server
+    # will launch the session for us
+    #
+    OPTION="$OPTION -noxstartup"
+    #
+    # if we're asked to query a zone with -z zonename -query
+    # then use the IP address
+    # but then reset ZIP so we don't misuse it later
+    # and remove any duplicate zonename
+    #
+    if [ -n "$ZIP" ]; then
+	OPTION="$OPTION -query $ZIP"
+	ZIP=""
+	if [ "$1" = "$ZNAME" ]; then
+	    shift
+	fi
+    else
+	OPTION="$OPTION -query $1"
+	shift
+    fi
+    ;;
+-kill)
+    shift
+    if [ -n "$ZIP" ]; then
+	/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${ZUSER}${ZIP}" $VNCSERVER -kill "$1"
+    else
+	exec $VNCSERVER -kill "$1"
+    fi
+    exit
+    ;;
+*)
+    OPTION="$OPTION $1"
+    shift
+    ;;
+esac
+done
+
+#
+# now we're ready to start a session
+#
+echo Running $VNCSERVER -geometry "$PREFSIZE" $OPTION
+#exit 3
+
+if [ -n "${ZIP}" ]; then
+    DISPNUM=$(/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${ZUSER}${ZIP}" $VNCSERVER -geometry "$PREFSIZE" $OPTION 2>&1 | grep '^New' | awk '{print $NF}')
+    #
+    # the zone name isn't in a nameservice, most likely, so we
+    # need to use the zone IP to connect to
+    # note that what the zone thinks its name is might not be what we
+    # think the name is
+    #
+    DISPNUM=${DISPNUM#*:}
+    DISPNUM=${ZIP}:${DISPNUM}
+else
+    DISPNUM=$($VNCSERVER -geometry "$PREFSIZE" $OPTION 2>&1 | grep '^New' | awk '{print $NF}')
+fi
+#
+# and optionally connect to it
+#
+echo "VNC Server started on $DISPNUM"
+case $CLIENT in
+X)
+    $VNCVIEWER -passwd "$HOME/.vnc/passwd" "$DISPNUM" > /dev/null 2>&1 &
+    ;;
+esac

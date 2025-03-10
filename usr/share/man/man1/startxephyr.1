@@ -1,0 +1,77 @@
+.\" Copyright 2024 Peter Tribble
+.TH "STARTXEPHYR" "1" "March 10, 2025" "Tribblix"
+.SH NAME
+startxephyr - convenient management of Xephyr sessions
+.SH SYNOPSIS
+.nf
+\fBstartxephyr\fR [-help] [-size t|s|m|l|xl] [-session name | -query host]
+.fi
+.SH DESCRIPTION
+The
+.BR startxephyr
+utility simplifies launching a local virtual X server,
+.BR Xephyr (1),
+and controlling the session run in the virtual X session.
+It uses the same mechanism and files as
+.BR setxsession (1)
+to manage the applications run inside the new X session, but does not
+run \fBsetxsession\fR explicitly.
+.SH OPTIONS
+The following options are supported:
+.sp
+.ne 2
+.na
+\fB-help\fR
+.ad
+.RS 15n
+Shows the usage message, and a list of available session names.
+.RE
+
+.sp
+.ne 2
+.na
+\fB-session\fR \fIname\fR
+.ad
+.RS 15n
+Specifies that VNC will be launched with the given session \fIname\fR,
+as defined by the
+.BR setxsession (1)
+utility.
+Use of this option will not set the default X session to the given
+name.
+.RE
+
+.sp
+.ne 2
+.na
+\fB-size\fR \fIt\fR|\fIs\fR|\fIm\fR|\fIl\fR|\fIxl\fR
+.ad
+.RS 15n
+Sets the size of the Xephyr display to be tiny, small, medium, large, or
+extra large.
+.RE
+
+.sp
+.ne 2
+.na
+\fB-q|-query\fR \fIhost\fR
+.ad
+.RS 15n
+Rather than launching a session itself, queries a remote
+.BR xdm (8)
+server using XDMCP.
+.RE
+
+.SH NOTES
+Unlike
+.BR startvnc (1),
+which launches a persistent session that you can disconnect from and
+reconnect to, \fBstartxephyr\fR has no persistence - as soon as the
+application is closed the session and all applications running inside
+it will terminate.
+
+.SH SEE ALSO
+.BR setxsession (1),
+.BR startvnc (1),
+.BR Xephyr (1),
+.BR xdm (8)

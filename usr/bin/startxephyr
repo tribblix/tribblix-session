@@ -1,0 +1,165 @@
+#!/bin/ksh
+#
+# SPDX-License-Identifier: CDDL-1.0
+#
+# Copyright 2025 Peter Tribble
+#
+# create a Xephyr session
+#
+# Tribblix version, aligns with setxsession (it uses the same files as
+# setxsession does, but doesn't call the setxsession script)
+#
+# defaults
+#
+TSESSDIR="/usr/share/tribblix-session"
+DEFSESSION="twm"
+QHOST=""
+PREFSIZE="1280x1024x24"
+
+#
+# this really shouldn't happen, as Xephyr is packaged with Xorg
+#
+if [ ! -x /usr/bin/Xephyr ]; then
+    echo "ERROR: Xephyr not installed."
+    exit 1
+fi
+
+#
+# make sure we're in a predictable place, namely the current user's home
+# directory, otherwise any applications launched in a session will start
+# from where we happen to be right now which is probably only going to
+# cause confusion
+#
+cd || exit 1
+
+#
+# parse arguments
+#
+while [ $# -gt 0 ]
+do
+case $1 in
+-help|--help)
+    echo "Usage: $0 [-help] [-size t|s|m|l|xl] [-session type | -query host]"
+    echo "Valid session types are:"
+    /usr/bin/setxsession | tail +2
+    exit 0
+    ;;
+-session)
+    shift
+case $1 in
+a*|i*|e*|o*|x*)
+    echo "Running an $1 session"
+    ;;
+"")
+    echo "ERROR: missing session name"
+    exit 2
+    ;;
+*)
+    echo "Running a $1 session"
+    ;;
+esac
+    XINITRC="${TSESSDIR}/$1.xinitrc"
+    if [ ! -x "${XINITRC}" ]; then
+	echo "ERROR: Invalid session $1"
+	exit 1
+    fi
+    shift
+    export XINITRC
+    ;;
+-s|-size)
+    shift
+case $1 in
+xl|extralarge)
+    PREFSIZE="2056x1280"
+    ;;
+l|large)
+    PREFSIZE="1580x1100"
+    ;;
+m|medium)
+    PREFSIZE="1440x1080"
+    ;;
+s|small)
+    PREFSIZE="1000x720"
+    ;;
+t|tiny)
+    PREFSIZE="780x540"
+    ;;
+esac
+    shift
+    ;;
+-g|-geometry)
+    shift
+    PREFSIZE="$1"
+    shift
+    ;;
+-q|-query)
+    shift
+    QHOST="$1"
+    shift
+    ;;
+esac
+done
+
+#
+# asking for a specific session doesn't work with a (probably remote)
+# query which will depend on the remote xdm server, so tell the user
+# that this won't work
+#
+if [ -n "${QHOST}" ]; then
+    if [ -n "${XINITRC}" ]; then
+	echo "Cannot specify a session and query together"
+	exit 2
+    fi
+else
+    #
+    # this shouldn't happen in a standard install 
+    #
+    if [ ! -x /usr/bin/setxsession ]; then
+	echo "ERROR: setxsession not installed."
+	echo "(install the x11 overlay)"
+	exit 1
+    fi
+    if [ ! -x /usr/bin/startx ]; then
+	echo "ERROR: startx not installed."
+	echo "(install the x11 overlay)"
+	exit 1
+    fi
+    #
+    # if we haven't been given a specific session, choose a very simplistic
+    # default
+    #
+    if [ -z "${XINITRC}" ]; then
+	XINITRC="${TSESSDIR}/${DEFSESSION}.xinitrc"
+	export XINITRC
+	if [ ! -x "${XINITRC}" ]; then
+	    echo "ERROR: Invalid session (fatal configuration error)"
+	    exit 1
+	fi
+    fi
+fi
+
+#
+# allocate an unused display (rather than expecting the user to pick
+# one that might work)
+#
+DISPNUM=0
+while [ -f "/tmp/.X${DISPNUM}-lock" ]
+do
+    DISPNUM=$((DISPNUM+1))
+    if [ "${DISPNUM}" -gt 99 ]; then
+	echo "ERROR: Unable to allocate display number"
+	exit 1
+    fi
+done
+
+#
+# now we're ready to start a session
+#
+if [ -n "${QHOST}" ]; then
+    /usr/bin/Xephyr :"${DISPNUM}" -screen "${PREFSIZE}" -query "${QHOST}"
+else
+    #
+    # XINITRC is exported above
+    #
+    /usr/bin/startx -- /usr/bin/Xephyr :"${DISPNUM}" -screen "${PREFSIZE}"
+fi
