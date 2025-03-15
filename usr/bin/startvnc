@@ -273,8 +273,6 @@ done
 #
 # now we're ready to start a session
 #
-echo Running $VNCSERVER -geometry "$PREFSIZE" $OPTION
-#exit 3
 
 if [ -n "${ZIP}" ]; then
     DISPNUM=$(/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${ZUSER}${ZIP}" $VNCSERVER -geometry "$PREFSIZE" $OPTION 2>&1 | grep '^New' | awk '{print $NF}')
