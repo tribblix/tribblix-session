@@ -1,12 +1,12 @@
-.\" Copyright 2024 Peter Tribble
-.TH "STARTVNC" "1" "March 10, 2025" "Tribblix"
+.\" Copyright 2025 Peter Tribble
+.TH "STARTVNC" "1" "April 9, 2025" "Tribblix"
 .SH NAME
 startvnc - convenient management of VNC sessions
 .SH SYNOPSIS
 .nf
 \fBstartvnc\fR [-z|-zone zone_name] [-help] [-session name]
        [-size t|s|m|l|xl] [-list] [-nc|-noclient] [-q|-query host]
-       [-c|-connect session] [-view session] [-client]
+       [-c|-connect session] [-Z bhyve_zone] [-view session] [-client]
 .fi
 .SH DESCRIPTION
 The
@@ -118,6 +118,19 @@ Manages VNC sessions on the local zone \fIzone_name\fR. It will
 launch the session in the zone, and connect to a session running in
 the zone (resolving the zone's name to an IP address, as normal
 hostname resolution won't work in this case).
+.RE
+
+.sp
+.ne 2
+.na
+\fB-Z\fR \fIzone_name\fR
+.ad
+.RS 15n
+Connects to the VNC console for the bhyve zone \fIzone_name\fR. This
+requires the current user to have been shared with the bhyve zone when
+it was created using the \fB-U\fR option to \fBzap create-zone\fR. To
+connect to a VNC session running inside the guest, use the \fB-z\fR
+option.
 .RE
 
 .sp
