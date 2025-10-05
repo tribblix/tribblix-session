@@ -112,7 +112,7 @@ if [ -n "${QHOST}" ]; then
     fi
 else
     #
-    # this shouldn't happen in a standard install 
+    # this shouldn't happen in a standard install
     #
     if [ ! -x /usr/bin/setxsession ]; then
 	echo "ERROR: setxsession not installed."
