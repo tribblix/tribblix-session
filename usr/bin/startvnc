@@ -134,7 +134,7 @@ case $1 in
 -help|--help)
     echo "Usage: $0 [-z|-zone zone_name] [-help] [-session type]"
     echo "       [-size t|s|m|l|xl] [-list] [-nc|-noclient] [-q|-query host]"
-    echo "       [-c|-connect session] [-Z bhyve_zone] [-view session] [-client]"
+    echo "       [-c|-connect session] [-Z zone] [-view session] [-client]"
     echo "Valid session types are:"
     if [ -n "$ZIP" ]; then
 	/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${ZUSER}${ZIP}" ${VNCSESSION} | tail +2
@@ -224,12 +224,17 @@ esac
     shift
     if [ -e "/var/zap/bhyve/${1}/vm.vnc" ]; then
 	$VNCVIEWER "/var/zap/bhyve/${1}/vm.vnc" > /dev/null 2>&1 &
+    elif [ -e "/var/zap/emu/${1}/vm.vnc" ]; then
+	$VNCVIEWER "/var/zap/emu/${1}/vm.vnc" > /dev/null 2>&1 &
     else
 	if [ -f "/etc/zones/${1}.xml" ]; then
 	    ZBRAND=$(zoneadm list -icp | awk -F: -v Z="$1" '{if ($2 == Z) print $6}')
 	    case $ZBRAND in
 		bhyve)
 		    echo "No access to bhyve zone socket"
+		    ;;
+		emu)
+		    echo "No access to emu zone socket"
 		    ;;
 		*)
 		    echo "Invalid request, not a bhyve zone"
