@@ -39,7 +39,8 @@ while [ $# -gt 0 ]
 do
 case $1 in
 -help|--help)
-    echo "Usage: $0 [-help] [-size t|s|m|l|xl] [-session type | -query host]"
+    MYEXE=${0##*/}
+    echo "Usage: ${MYEXE} [-session type | -query host] [-size t|s|m|l|xl] [-help]"
     echo "Valid session types are:"
     /usr/bin/setxsession | tail +2
     exit 0

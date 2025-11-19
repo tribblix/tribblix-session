@@ -132,9 +132,10 @@ while [ $# -gt 0 ]
 do
 case $1 in
 -help|--help)
-    echo "Usage: $0 [-z|-zone zone_name] [-help] [-session type]"
-    echo "       [-size t|s|m|l|xl] [-list] [-nc|-noclient] [-q|-query host]"
-    echo "       [-c|-connect session] [-Z zone] [-view session] [-client]"
+    MYEXE=${0##*/}
+    echo "Usage: ${MYEXE} [-session type] [-c|-connect session] [-size t|s|m|l|xl]"
+    echo "       [-list] [-nc|-noclient] [-q|-query host] [-client] [-view session]"
+    echo "       [-z|-zone [user@]zone_name[:display]] [-Z zone] [-help]"
     echo "Valid session types are:"
     if [ -n "$ZIP" ]; then
 	/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${ZUSER}${ZIP}" ${VNCSESSION} | tail +2
